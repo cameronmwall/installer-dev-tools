@@ -380,6 +380,7 @@ def injectHelmFlowControl(deployment):
             prev_line = lines[i-1]
             if next_line.strip() == "type: RuntimeDefault" and "semverCompare" not in prev_line:
                 insertFlowControlIfAround(lines, i, i+1, "semverCompare \">=4.11.0\" .Values.hubconfig.ocpVersion")
+                insertFlowControlIfAround(lines, i-1, i+2, ".Values.global.deployOnOCP")
 
         a_file = open(deployment, "w")
         a_file.writelines(lines)
