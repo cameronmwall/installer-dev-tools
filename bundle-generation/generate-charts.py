@@ -629,7 +629,7 @@ def updateHelmResources(chartName, helmChart, exclusions, inclusions, branch):
                         target_namespace = f"{{{{ default \"{current_namespace}\" .Values.global.namespace }}}}"
                         resource_data['metadata']['namespace'] = target_namespace
                         logging.info(f"Namespace for {resource_name} set to: {target_namespace} (Helm default used).")
-                if chartName == 'flightctl':
+                if chartName == 'flight-control':
                     if kind == 'Route':
                         if resource_name == 'flightctl-api-route':
                             resource_data['spec']['host'] = """api.{{ .Values.global.baseDomain  }}"""
@@ -639,6 +639,7 @@ def updateHelmResources(chartName, helmChart, exclusions, inclusions, branch):
                     if kind == 'ConfigMap':
                         resource_data['metadata']['namespace'] = '{{ .Values.global.namespace  }}'
                         if 'config.yaml' in resource_data['data']:
+                            logging.warning()
                             resource_data['data']['config.yaml'] = resource_data['data']['config.yaml'].replace('default', '{{ .Values.global.namespace  }}')
                             resource_data['data']['config.yaml'] = resource_data['data']['config.yaml'].replace('placeholder-url', '{{ .Values.global.aPIUrl  }}')
                             resource_data['data']['config.yaml'] = resource_data['data']['config.yaml'].replace('placeholder-basedomain', '{{ .Values.global.baseDomain  }}')
