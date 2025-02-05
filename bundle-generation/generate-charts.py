@@ -648,18 +648,16 @@ def updateHelmResources(chartName, helmChart, exclusions, inclusions, branch):
                             resource_data['spec']['host'] = """agent-api.{{ .Values.global.baseDomain  }}"""
 
                     if kind == 'ConfigMap':
+                        
                         resource_data['metadata']['namespace'] = '{{ .Values.global.namespace  }}'
-                        if 'config.yaml' in resource_data['data']:
-                            with open(resource_data['data']['config.yaml'], 'r') as f:
-                                resource_data = yaml.safe_load(f)
-                            config_data['database']['database']['hostname'] = 'flightctl-db.{{ .Values.global.namespace }}.svc.cluster.local'
-                            # resource_data['data']['config.yaml'] = resource_data['data']['config.yaml'].replace('default', '{{ .Values.global.namespace  }}')
-                            # replace_default(resource_data, 'default', '{{ .Values.global.namespace  }}')
-                            # resource_data['data']['config.yaml'] = resource_data['data']['config.yaml'].replace('placeholder-url', '{{ .Values.global.aPIUrl  }}')
-                            # resource_data['data']['config.yaml'] = resource_data['data']['config.yaml'].replace('placeholder-basedomain', '{{ .Values.global.baseDomain  }}')
-                            with open(resource_data['data']['config.yaml'], 'w') as f:
-                                yaml.dump(resource_data['data']['config.yaml'], f, width=float("inf"))
-                            logging.warning(resource_data['data']['config.yaml'])
+                        config_data = resource_data.get('data')
+                        for key, value in config_data.items():
+                            if key.endswith(".yaml") or key.endswith(".yml"):
+                                key_data = yaml.safe_load(value)
+                                logging.warning(f"key_data={key_data.get('database').get('hostname')}")
+                                key_data['database']['hostname'] = "foobar"
+
+                                yaml.dump(config_data, resource_data['data']['config.yaml'], width=float("inf"))
 
                 
                     if kind == "ClusterRoleBinding":
