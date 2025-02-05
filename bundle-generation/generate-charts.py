@@ -658,7 +658,7 @@ def updateHelmResources(chartName, helmChart, exclusions, inclusions, branch):
                             # resource_data['data']['config.yaml'] = resource_data['data']['config.yaml'].replace('placeholder-url', '{{ .Values.global.aPIUrl  }}')
                             # resource_data['data']['config.yaml'] = resource_data['data']['config.yaml'].replace('placeholder-basedomain', '{{ .Values.global.baseDomain  }}')
                             with open(resource_data['data']['config.yaml'], 'w') as f:
-                                yaml.dump(, f, width=float("inf"))
+                                yaml.dump(resource_data['data']['config.yaml'], f, width=float("inf"))
                             logging.warning(resource_data['data']['config.yaml'])
 
                 
