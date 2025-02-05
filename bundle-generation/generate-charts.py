@@ -650,11 +650,15 @@ def updateHelmResources(chartName, helmChart, exclusions, inclusions, branch):
                     if kind == 'ConfigMap':
                         resource_data['metadata']['namespace'] = '{{ .Values.global.namespace  }}'
                         if 'config.yaml' in resource_data['data']:
-                            resource_data['data']['config.yaml']['database']['database']['hostname'] = 'flightctl-db.{{ .Values.global.namespace }}.svc.cluster.local'
+                            with open(resource_data['data']['config.yaml'], 'r') as f:
+                                resource_data = yaml.safe_load(f)
+                            config_data['database']['database']['hostname'] = 'flightctl-db.{{ .Values.global.namespace }}.svc.cluster.local'
                             # resource_data['data']['config.yaml'] = resource_data['data']['config.yaml'].replace('default', '{{ .Values.global.namespace  }}')
                             # replace_default(resource_data, 'default', '{{ .Values.global.namespace  }}')
                             # resource_data['data']['config.yaml'] = resource_data['data']['config.yaml'].replace('placeholder-url', '{{ .Values.global.aPIUrl  }}')
                             # resource_data['data']['config.yaml'] = resource_data['data']['config.yaml'].replace('placeholder-basedomain', '{{ .Values.global.baseDomain  }}')
+                            with open(resource_data['data']['config.yaml'], 'w') as f:
+                                yaml.dump(, f, width=float("inf"))
                             logging.warning(resource_data['data']['config.yaml'])
 
                 
