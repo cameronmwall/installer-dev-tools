@@ -657,7 +657,7 @@ def updateHelmResources(chartName, helmChart, exclusions, inclusions, branch):
                                 logging.warning(f"key_data={key_data.get('database').get('hostname')}")
                                 key_data['database']['hostname'] = "foobar"
 
-                                yaml.dump(config_data, resource_data['data']['config.yaml'], width=float("inf"))
+                                yaml.dump(key_data, resource_data['data']['config.yaml'], width=float("inf"))
 
                 
                     if kind == "ClusterRoleBinding":
