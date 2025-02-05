@@ -585,6 +585,17 @@ def updateDeployments(chartName, helmChart, exclusions, inclusions, branch):
         if 'pullSecretOverride' in inclusions:
             addPullSecretOverride(deployment)
 
+def replace_default(data, old, new):
+    if isinstance(data, dict):
+        for key, value in data.items():
+            data[key] = replace_default(value, old, new)
+    elif isinstance(data, list):
+        for i in range(len(data)):
+            data[i] = replace_default(data[i], old, new)
+    elif isinstance(data, str):
+        return data.replace(old, new)
+    return data
+
 # updateHelmResources adds standard configuration to the generic kubernetes resources
 def updateHelmResources(chartName, helmChart, exclusions, inclusions, branch):
     logging.info(f"Updating resources chart: {chartName}")
@@ -640,9 +651,10 @@ def updateHelmResources(chartName, helmChart, exclusions, inclusions, branch):
                         resource_data['metadata']['namespace'] = '{{ .Values.global.namespace  }}'
                         if 'config.yaml' in resource_data['data']:
                             logging.warning()
-                            resource_data['data']['config.yaml'] = resource_data['data']['config.yaml'].replace('default', '{{ .Values.global.namespace  }}')
-                            resource_data['data']['config.yaml'] = resource_data['data']['config.yaml'].replace('placeholder-url', '{{ .Values.global.aPIUrl  }}')
-                            resource_data['data']['config.yaml'] = resource_data['data']['config.yaml'].replace('placeholder-basedomain', '{{ .Values.global.baseDomain  }}')
+                            # resource_data['data']['config.yaml'] = resource_data['data']['config.yaml'].replace('default', '{{ .Values.global.namespace  }}')
+                            replace_default(resource_data, 'default', '{{ .Values.global.namespace  }}')
+                            # resource_data['data']['config.yaml'] = resource_data['data']['config.yaml'].replace('placeholder-url', '{{ .Values.global.aPIUrl  }}')
+                            # resource_data['data']['config.yaml'] = resource_data['data']['config.yaml'].replace('placeholder-basedomain', '{{ .Values.global.baseDomain  }}')
                 
                     if kind == "ClusterRoleBinding":
                         resource_data['metadata']['name'] = 'flightctl-api-{{ .Values.global.namespace }}'
